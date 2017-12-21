@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="sample">
+     <select id="selectBoardList" parameterType="hashmap" resultType="hashmap">
+	     select *
+	     from product
+	     where basketYN="N"
+	 	<if test="searching != null ||searching != '' ">
+	 	<choose>
+	 		<when test="search==1">and (productid like concat('%',#{searching},'%') OR productname like concat('%',#{searching},'%')
+	 		OR autor like concat('%',#{searching},'%') OR publisher like concat('%',#{searching},'%'))</when>
+	 		<when test="search==2">and productid like concat('%',#{searching},'%')</when>
+	 		<when test="search==3">and productname like concat('%',#{searching},'%')</when>
+	 		<when test="search==4">and autor like concat('%',#{searching},'%')</when>
+	 		<when test="search==5">and publisher like concat('%',#{searching},'%')</when>
+	 	</choose> 	
+		</if> 
+     </select>
+
+     <select id="selectUserList" parameterType="hashmap" resultType="hashmap">
+     select id,
+     		pw,
+     		phone,
+     		name,
+     		address,
+     		point 
+     from user
+     </select>
+     <delete id="deletebasket" parameterType="hashmap">
+		delete 
+		from purchace
+		where productid = #{productid}
+		and id=#{id}
+     </delete>
+     <insert id="insertBoardList" parameterType="hashmap">
+		insert into user
+		(
+			id,
+			pw,
+			name,
+			address,
+			phone,
+			point
+		)values
+		(
+			#{id},
+			#{pw},
+			#{name},
+			#{address},
+			#{phone},
+			#{point}
+		)
+     </insert>
+     <select id="selectloginchek" parameterType="hashmap" resultType="hashmap">
+     select id,
+     		pw,
+     		phone,
+     		name,
+     		address,
+     		point 
+     from  user
+     where id=#{id}
+       and pw=#{pw}
+     </select>
+     <insert id="insertBasketList" parameterType="hashmap">
+     	insert into purchace
+		(
+			id,
+			productid,
+			purchaseYN,
+			date
+		)values
+		(
+			#{id},
+			#{productid},
+			#{purchaseYN},
+			#{date}
+		)
+     </insert>
+     <select id="selectpurchaselist" parameterType="hashmap" resultType="hashmap" >
+		     SELECT a.id
+			  ,a.productid
+			  ,a.purchaseYN
+		      ,b.productid
+		      ,b.productname
+		      ,b.autor
+		      ,b.price
+		      ,b.publisher
+			FROM purchace as a
+			left outer join product as b
+			on a.productid=b.productid
+		    where a.id=#{id}
+     </select>
+     <update id="updateBasketList" parameterType="hashmap" >
+		update product
+		set basketYN = #{basketYN}
+		where productid=#{productid}
+     </update>
+     
+     <update id="updatePoint" parameterType="hashmap" >
+		update user
+		set point = #{uppoint}
+		where id=#{id}
+     </update>
+     <update id="updatepurchaseYN" parameterType="hashmap" >
+		update purchace
+		set purchaseYN = #{purchaseYN}
+		where id=#{id}
+		and productid=#{productid}
+     </update>
+     <insert id="insertProductList" parameterType="hashmap">
+     	insert into product
+		(
+			productname,
+			price,
+			autor,
+			publisher,
+			basketYN
+		)values
+		(
+			#{productname},
+			#{price},
+			#{autor},
+			#{publisher},
+			#{basketYN}
+		)
+     </insert>
+</mapper>
